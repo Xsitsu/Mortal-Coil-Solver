@@ -1,8 +1,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#define nullptr NULL
-
 #include <string>
 #include <fstream>
 
@@ -24,8 +22,8 @@ private:
 protected:
 	Logger(int num);
 	~Logger();
-	Logger(Logger const&){};
-	Logger& operator=(Logger const&){};
+	Logger(Logger const&) = delete;
+	Logger& operator=(Logger const&) = delete;
 
 public:
 	static Logger& Instance(int num = 0);
