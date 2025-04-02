@@ -4,7 +4,7 @@
 #include <exception>
 #include <string>
 
-Controller::Controller(int x, int y)
+Controller::Controller(std::string input_file_path, std::string output_file_path, int x, int y)
 {
 #ifdef DEBUG_OUTPUT_CONSTRUCTORS
 	Logger::Instance() << "Controller constructed: " << int(this) << NEWLINE;
@@ -13,6 +13,8 @@ Controller::Controller(int x, int y)
 	game_board = new GameBoard();
 	http = new HttpService;
 
+	this->input_file_path = input_file_path;
+	this->output_file_path = output_file_path;
     start_x = x;
     start_y = y;
 }
@@ -48,7 +50,7 @@ void Controller::Step()
 		Logger::Instance() << "Requesting board data from website!" << NEWLINE;
 		try
 		{
-			PuzzleData data = http->GetPuzzle();
+			PuzzleData data = http->GetPuzzle(this->input_file_path);
 			game_board->CreateBoard(data, start_x, start_y);
 			Logger::Instance() << "Loaded Puzzle #" << data.number << NEWLINE;
 		}
@@ -194,7 +196,7 @@ void Controller::Step()
 
 		Logger::Instance() << "Output String: " << pos.x << "_" << pos.y << "_" << str << NEWLINE;
 
-		http->PostSolution(pos.x, pos.y, str);
+		http->PostSolution(output_file_path, pos.x, pos.y, str);
 
 		state = CSTATE_CLEAR;
 		break;

@@ -9,25 +9,31 @@
 
 #include "Switches.h"
 
+void usage(std::string prog_name);
+
 int main(int argc, char** argv)
 {
+	if (argc != 3)
+	{
+		usage(argv[0]);
+		return -1;
+	}
+
+	std::string input_file_path = argv[1];
+	std::string output_file_path = argv[2];
+
     int n, x, y;
     std::string s;
-    FileIO::ReadBoardData(n, x, y, s);
+    FileIO::ReadBoardData(input_file_path, n, x, y, s);
     
     Logger::Instance(n);
 
     int start_x = 0;
     int start_y = 0;
-    if (argc == 3)
-    {
-        start_x = atoi(argv[1]);
-        start_y = atoi(argv[2]);
-    }
 
 	try
 	{
-		Controller controller(start_x, start_y);
+		Controller controller(input_file_path, output_file_path, start_x, start_y);
 		while (controller.GetState() != CSTATE_DONE)
 		{
 			try
@@ -72,4 +78,11 @@ int main(int argc, char** argv)
 	Logger::Cleanup();
 
     return(0);
+}
+
+
+
+void usage(std::string prog_name)
+{
+	std::cout << "Usage: " + prog_name + " <board_file> <solution_file>" << std::endl;
 }

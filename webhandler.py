@@ -1,15 +1,19 @@
-#!/usr/bin/python
-import urllib2
-import re
+#!/usr/bin/python3
 import sys
-import time
+import urllib3
 
-URL = "http://www.hacker.org/coil/index.php"
+URL = "https://www.hacker.org/coil/index.php"
 URL = URL + "?name=" + sys.argv[1] + "&password=" + sys.argv[2]
 
+http = urllib3.PoolManager()
+
 def GetPuzzle():
-    response = urllib2.urlopen(URL)
+    print("URL: ", URL)
+    response = http.request('GET', URL)
     html = response.read()
+
+    print("RESPONSE:", html)
+    return range(20)
     
     line_level = html.find("Level: ") + 7
     line_level_end = html.find("<br", line_level)
@@ -39,9 +43,12 @@ def GetPuzzle():
     return comp
 
 def PostSolution(path, x, y):
+    pass
+
+def OTHER(path, x, y):
     url = URL
     url = url + "&path=" + path + "&x=" + str(x) + "&y=" + str(y)
-    urllib2.urlopen(url)
+    http.request('POST', url)
 
 
 if sys.argv[3] == "POST":

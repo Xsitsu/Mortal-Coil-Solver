@@ -25,9 +25,11 @@ private:
 
     int start_x;
     int start_y;
+	std::string input_file_path;
+	std::string output_file_path;
 
 public:
-	Controller(int x, int y);
+	Controller(std::string input_file_path, std::string output_file_path, int x, int y);
 	~Controller();
 
 	CSTATE GetState() { return state; }

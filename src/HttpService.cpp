@@ -12,10 +12,10 @@ HttpService::~HttpService()
 
 }
 
-PuzzleData HttpService::GetPuzzle()
+PuzzleData HttpService::GetPuzzle(std::string input_file_path)
 {
     PuzzleData ret;
-    FileIO::ReadBoardData(ret.number, ret.x, ret.y, ret.data);
+    FileIO::ReadBoardData(input_file_path, ret.number, ret.x, ret.y, ret.data);
 
 	Logger::Instance(ret.number) << "Data Check for puzzle: " << ret.number << "!" << NEWLINE;
 	//Logger::Instance() << "1. Data: " << data << NEWLINE;
@@ -24,7 +24,7 @@ PuzzleData HttpService::GetPuzzle()
 	return ret;
 }
 
-void HttpService::PostSolution(int x, int y, std::string path)
+void HttpService::PostSolution(std::string output_file_path, int x, int y, std::string path)
 {
-    FileIO::WriteSolution(x, y, path);
+    FileIO::WriteSolution(output_file_path, x, y, path);
 }

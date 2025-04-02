@@ -16,8 +16,8 @@ public:
 	HttpService();
 	~HttpService();
 
-	PuzzleData GetPuzzle();
-	void PostSolution(int x, int y, std::string path);
+	PuzzleData GetPuzzle(std::string input_file_path);
+	void PostSolution(std::string output_file_path, int x, int y, std::string path);
 	
 };
 
