@@ -86,6 +86,7 @@ void Controller::Step()
 		try
 		{
 			std::string puzzle_data = http->GetPuzzleData(this->current_level);
+			std::cout << "Puzzle Data: " << puzzle_data << std::endl;
 
 			PuzzleData data;
 			data.number = current_level;
@@ -238,7 +239,9 @@ void Controller::Step()
 
 		std::cout << "Output String: " << pos.x << "_" << pos.y << "_" << str << std::endl;
 
+		std::cout << "Post solution" << std::endl;
 		http->PostPuzzleSolution(pos.x, pos.y, str);
+		std::cout << "Did post solution!!" << std::endl;
 
 		state = CSTATE_CLEAR;
 		break;

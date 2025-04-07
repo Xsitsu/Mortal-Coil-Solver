@@ -77,6 +77,31 @@ std::string HttpHandler::ExtractPuzzleData(std::string website_data, int level) 
 void HttpHandler::PostPuzzleSolution(int x, int y, std::string path) const
 {
     std::cout << "POST SOLUTION!! " << x << ", " << y << ", " << path << std::endl;
+
+    CURL *curl = curl_easy_init();
+    if (curl == nullptr)
+        throw "Curl failed!";
+
+    std::string url = this->base_url + "&path=" + path + "&x=" + std::to_string(x) + "&y=" + std::to_string(y);
+    //std::cout << "full url: " << url << std::endl;
+
+    std::string readbuffer;
+
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &(this->curl_write_callback));
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readbuffer);
+    //curl_easy_setopt(curl, CURLOPT_POST, 1);
+
+    std::cout << "try" << std::endl;
+    CURLcode res = curl_easy_perform(curl);
+    std::cout << "done!" << std::endl;
+
+    if (res != CURLE_OK)
+        throw curl_easy_strerror(res);
+
+    curl_easy_cleanup(curl);
+
+    //std::cout << "Post result: " << readbuffer << std::endl;
 }
 
 std::string HttpHandler::ConstructBaseUrl(std::string username, std::string password)
