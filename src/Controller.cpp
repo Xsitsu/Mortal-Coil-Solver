@@ -4,19 +4,18 @@
 #include <exception>
 #include <string>
 
-Controller::Controller(std::string input_file_path, std::string output_file_path, int x, int y)
+Controller::Controller(HttpHandler *handler, int start_level, int start_x, int start_y)
 {
 #ifdef DEBUG_OUTPUT_CONSTRUCTORS
 	Logger::Instance() << "Controller constructed: " << int(this) << NEWLINE;
 #endif
 	state = CSTATE_INIT;
 	game_board = new GameBoard();
-	http = new HttpService;
+	http = handler;
 
-	this->input_file_path = input_file_path;
-	this->output_file_path = output_file_path;
-    start_x = x;
-    start_y = y;
+	this->current_level = start_level;
+    this->start_x = start_x;
+    this->start_y = start_y;
 }
 
 Controller::~Controller()
@@ -26,7 +25,8 @@ Controller::~Controller()
 #endif
 
 	delete game_board;
-	delete http;
+	// Don't delete HttpHandler.
+	// We create it on the stack and just pass the pointer in.
 
 	if (fin.is_open())
 		fin.close();
@@ -50,7 +50,8 @@ void Controller::Step()
 		Logger::Instance() << "Requesting board data from website!" << NEWLINE;
 		try
 		{
-			PuzzleData data = http->GetPuzzle(this->input_file_path);
+			std::string puzzle_data = http->GetPuzzleData(this->current_level);
+			PuzzleData data;
 			game_board->CreateBoard(data, start_x, start_y);
 			Logger::Instance() << "Loaded Puzzle #" << data.number << NEWLINE;
 		}
@@ -196,7 +197,7 @@ void Controller::Step()
 
 		Logger::Instance() << "Output String: " << pos.x << "_" << pos.y << "_" << str << NEWLINE;
 
-		http->PostSolution(output_file_path, pos.x, pos.y, str);
+		http->PostPuzzleSolution(pos.x, pos.y, str);
 
 		state = CSTATE_CLEAR;
 		break;

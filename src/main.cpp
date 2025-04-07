@@ -5,35 +5,39 @@
 #include "Exceptions.h"
 #include "Controller.h"
 #include "Logger.h"
-#include "fileio.hpp"
 
 #include "Switches.h"
+
+#include "http/http_handler.hpp"
 
 void usage(std::string prog_name);
 
 int main(int argc, char** argv)
 {
-	if (argc != 3)
+	if (argc != 4)
 	{
 		usage(argv[0]);
 		return -1;
 	}
 
-	std::string input_file_path = argv[1];
-	std::string output_file_path = argv[2];
+	std::string username = argv[1];
+	std::string password = argv[2];
+	std::string level_num = argv[3];
 
     int n, x, y;
     std::string s;
-    FileIO::ReadBoardData(input_file_path, n, x, y, s);
     
     Logger::Instance(n);
 
     int start_x = 0;
     int start_y = 0;
+	int start_level = atoi(level_num.c_str());
+
+	HttpHandler handler(username, password, "./level-cache/");
 
 	try
 	{
-		Controller controller(input_file_path, output_file_path, start_x, start_y);
+		Controller controller(&handler, start_level, start_x, start_y);
 		while (controller.GetState() != CSTATE_DONE)
 		{
 			try
@@ -84,5 +88,5 @@ int main(int argc, char** argv)
 
 void usage(std::string prog_name)
 {
-	std::cout << "Usage: " + prog_name + " <board_file> <solution_file>" << std::endl;
+    std::cout << "Usage: " + prog_name + " <username> <password> <level_number>" << std::endl;
 }

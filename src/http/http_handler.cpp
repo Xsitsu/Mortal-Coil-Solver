@@ -74,7 +74,7 @@ std::string HttpHandler::ExtractPuzzleData(std::string website_data, int level) 
     return results;
 }
 
-void HttpHandler::PostPuzzleSolution() const
+void HttpHandler::PostPuzzleSolution(int x, int y, std::string path) const
 {
 
 }

@@ -11,7 +11,7 @@ public:
     HttpHandler(std::string username, std::string password, std::string cache_directory_path);
 
     std::string GetPuzzleData(int level) const;
-    void PostPuzzleSolution() const;
+    void PostPuzzleSolution(int x, int y, std::string path) const;
 
 private:
     std::string base_url;
