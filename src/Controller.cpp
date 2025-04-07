@@ -27,6 +27,11 @@ std::string ExtractVariable(std::string puzzle_data, std::string var_name)
     return result.substr(base.length(), new_len);
 }
 
+int DecodeLevel(std::string puzzle_data)
+{
+	return std::stoi(ExtractVariable(puzzle_data, "curLevel"));
+}
+
 int DecodeWidth(std::string puzzle_data)
 {
     return std::stoi(ExtractVariable(puzzle_data, "width"));
@@ -79,22 +84,16 @@ void Controller::Step()
 		switch (ex)
 		{
 		case EX_BOARD_ALREADY_LOADED:
-			std::cout << "Error: Board is already loaded!" << std::endl;
 			break;
 		case EX_BOARD_NOT_LOADED:
-			std::cout << "Error: Board is not currently loaded!" << std::endl;
 			break;
 		case EX_BAD_BOARD_LOAD_ATTEMPT:
-			std::cout << "Error: Improper values used for creation of board!" << std::endl;
 			break;
 		case EX_FAIL_FILE_OPEN:
-			std::cout << "Error: Could not open board input file!" << std::endl;
 			break;
 		case EX_OUT_OF_BOARD_RANGE:
-			std::cout << "Error: Read square was outside of board range!" << std::endl;
 			break;
 		case EX_ILLEGAL_BOARD_OPERATION:
-			std::cout << "Error: Illegal board operation!" << std::endl;
 			break;
 		default:
 			std::cout << "Error: Unknown exception: " << ex << "!" << std::endl;
@@ -109,19 +108,20 @@ void Controller::DoStep()
 	{
 	case CSTATE_INIT:
 	{
-		std::cout << "Mortal Coil Solver Starting!" << std::endl;
-
 		state = CSTATE_LOAD;
 		break;
 	}
 	case CSTATE_LOAD:
 	{
-		std::cout << std::endl;
-		std::cout << "Requesting board data from website!" << std::endl;
 		try
 		{
-			std::string puzzle_data = http->GetPuzzleData(this->current_level);
-			std::cout << "Puzzle Data: " << puzzle_data << std::endl;
+			std::string puzzle_data = this->overwrite_data;
+			if (puzzle_data == "")
+				puzzle_data = http->GetPuzzleData(this->current_level);
+			else
+			{
+				this->current_level = DecodeLevel(puzzle_data);
+			}
 
 			PuzzleData data;
 			data.number = current_level;
@@ -130,7 +130,6 @@ void Controller::DoStep()
 			data.data = DecodeBoardData(puzzle_data);
 
 			game_board->CreateBoard(data, start_x, start_y);
-			std::cout << "Loaded Puzzle #" << data.number << std::endl;
 		}
 		catch (std::exception& ex)
 		{
@@ -140,10 +139,6 @@ void Controller::DoStep()
 		}
 
 		state = CSTATE_SOLVING;
-
-		std::cout << std::endl;
-		std::cout << "Starting solving algorithm!" << std::endl;
-
 		break;
 	}
 	case CSTATE_SOLVING:
@@ -164,17 +159,14 @@ void Controller::DoStep()
 
 					if (pos.y >= max_y)
 					{
-						std::cout << "This should never happen! Apparently every single board space has been attempted!" << std::endl;
+						// Every space has been attempted, and yet no solution has been found...
+						// Should never happen
 						state = CSTATE_CLEAR;
 					}
 				}
 				game_board->SetPosition(pos);
 			} while (game_board->ReadSquare(pos.x, pos.y) == BLOCK);
 			
-			std::cout << std::endl;
-			std::cout << "Starting new attempt from position: " << pos.x << "x " << pos.y << "y!" << std::endl;
-			std::cout << "Max board size: " << game_board->GetWidth() - 1 << "x " << game_board->GetHeight() - 1 << "y!" << std::endl << std::endl;
-
 			Guess* guess = new Guess(game_board);
 			guess->SetNoGood(CT_UP);
 			guess->SetNoGood(CT_DOWN);
@@ -243,9 +235,6 @@ void Controller::DoStep()
 	}
 	case CSTATE_SOLVED:
 	{
-		std::cout << std::endl;
-		std::cout << "Board has been solved!" << std::endl << std::endl;
-
 		std::stack<char> char_stack;
 
 		Guess* ptr;
@@ -269,31 +258,18 @@ void Controller::DoStep()
 		}
 
 		BoardPosition pos = game_board->GetBoardPosition();
-		std::cout << "Start Position: " << pos.x << "x " << pos.y << "y" << std::endl;
-		std::cout << "Solution: " << str << std::endl << std::endl;
-
-		std::cout << "Output String: " << pos.x << "_" << pos.y << "_" << str << std::endl;
-
-		std::cout << "Post solution" << std::endl;
-		http->PostPuzzleSolution(pos.x, pos.y, str);
-		std::cout << "Did post solution!!" << std::endl;
+		if (this->http != nullptr)
+			http->PostPuzzleSolution(pos.x, pos.y, str);
+		else
+			std::cout << pos.x << "_" << pos.y << "_" << str << std::endl;
 
 		state = CSTATE_CLEAR;
 		break;
 	}
 	case CSTATE_CLEAR:
 	{
-		std::cout << std::endl;
-		std::cout << "The board will now be cleared!" << std::endl;
-		std::cout << "Current stack size: " << guess_stack.size() << std::endl;
-
 		game_board->Clear();
-
         state = CSTATE_DONE;
-
-        std::cout << std::endl;
-        std::cout << "Solver program will now terminate!" << std::endl << std::endl;
-
 		break;
 	}
 	default:
@@ -302,4 +278,9 @@ void Controller::DoStep()
 		break;
 	}
 	}
+}
+
+void Controller::OverwritePuzzleData(std::string puzzle_data)
+{
+	this->overwrite_data = puzzle_data;
 }

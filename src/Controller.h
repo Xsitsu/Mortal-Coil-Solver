@@ -26,6 +26,7 @@ private:
 	int current_level;
     int start_x;
     int start_y;
+	std::string overwrite_data;
 
 public:
 	Controller(HttpHandler *handler, int start_level, int start_x, int start_y);
@@ -33,6 +34,7 @@ public:
 
 	CSTATE GetState() { return state; }
 	void Step();
+	void OverwritePuzzleData(std::string puzzle_data);
 
 private:
 	void DoStep();
