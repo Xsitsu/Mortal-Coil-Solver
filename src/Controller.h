@@ -33,6 +33,9 @@ public:
 
 	CSTATE GetState() { return state; }
 	void Step();
+
+private:
+	void DoStep();
 };
 
 #endif
