@@ -76,7 +76,7 @@ std::string HttpHandler::ExtractPuzzleData(std::string website_data, int level) 
 
 void HttpHandler::PostPuzzleSolution(int x, int y, std::string path) const
 {
-
+    std::cout << "POST SOLUTION!! " << x << ", " << y << ", " << path << std::endl;
 }
 
 std::string HttpHandler::ConstructBaseUrl(std::string username, std::string password)

@@ -3,6 +3,49 @@
 #include <iostream>
 #include <exception>
 #include <string>
+#include <format>
+#include <regex>
+
+
+
+std::string ExtractVariable(std::string puzzle_data, std::string var_name)
+{
+    std::string base = std::format("var {} = ", var_name);
+    std::regex pattern(std::format("{}.*?;", base));
+    std::smatch matches;
+    std::regex_search(puzzle_data, matches, pattern);
+
+    std::string result;
+    for (auto match : matches)
+    {
+        result += match;
+    }
+
+    int start_pos = base.length();
+    int new_len = result.length() - start_pos - 1;
+
+    return result.substr(base.length(), new_len);
+}
+
+int DecodeWidth(std::string puzzle_data)
+{
+    return std::stoi(ExtractVariable(puzzle_data, "width"));
+}
+
+int DecodeHeight(std::string puzzle_data)
+{
+    return std::stoi(ExtractVariable(puzzle_data, "height"));
+}
+
+std::string DecodeBoardData(std::string puzzle_data)
+{
+	std::string var = ExtractVariable(puzzle_data, "boardStr");
+	return var.substr(1, var.length() - 2);
+}
+
+
+
+
 
 Controller::Controller(HttpHandler *handler, int start_level, int start_x, int start_y)
 {
@@ -46,26 +89,32 @@ void Controller::Step()
 	}
 	case CSTATE_LOAD:
 	{
-		Logger::Instance().BreakLine();
-		Logger::Instance() << "Requesting board data from website!" << NEWLINE;
+		std::cout << std::endl;
+		std::cout << "Requesting board data from website!" << std::endl;
 		try
 		{
 			std::string puzzle_data = http->GetPuzzleData(this->current_level);
+
 			PuzzleData data;
+			data.number = current_level;
+			data.x = DecodeWidth(puzzle_data);
+			data.y = DecodeHeight(puzzle_data);
+			data.data = DecodeBoardData(puzzle_data);
+
 			game_board->CreateBoard(data, start_x, start_y);
-			Logger::Instance() << "Loaded Puzzle #" << data.number << NEWLINE;
+			std::cout << "Loaded Puzzle #" << data.number << std::endl;
 		}
 		catch (std::exception& ex)
 		{
-			Logger::Instance() << "Exception: " << ex.what() << NEWLINE;
+			std::cout << "Exception: " << ex.what() << std::endl;
 			state = CSTATE_DONE;
 			throw EX_HTTP_GET_FAIL;
 		}
 
 		state = CSTATE_SOLVING;
 
-		Logger::Instance().BreakLine();
-		Logger::Instance() << "Starting solving algorithm!" << NEWLINE;
+		std::cout << std::endl;
+		std::cout << "Starting solving algorithm!" << std::endl;
 
 		break;
 	}
@@ -87,16 +136,16 @@ void Controller::Step()
 
 					if (pos.y >= max_y)
 					{
-						Logger::Instance() << "This should never happen! Apparently every single board space has been attempted!" << NEWLINE;
+						std::cout << "This should never happen! Apparently every single board space has been attempted!" << std::endl;
 						state = CSTATE_CLEAR;
 					}
 				}
 				game_board->SetPosition(pos);
 			} while (game_board->ReadSquare(pos.x, pos.y) == BLOCK);
 			
-			Logger::Instance().BreakLine();
-			Logger::Instance() << "Starting new attempt from position: " << pos.x << "x " << pos.y << "y!" << NEWLINE;
-			Logger::Instance() << "Max board size: " << game_board->GetWidth() - 1 << "x " << game_board->GetHeight() - 1 << "y!" << NEWLINE << NEWLINE;
+			std::cout << std::endl;
+			std::cout << "Starting new attempt from position: " << pos.x << "x " << pos.y << "y!" << std::endl;
+			std::cout << "Max board size: " << game_board->GetWidth() - 1 << "x " << game_board->GetHeight() - 1 << "y!" << std::endl << std::endl;
 
 			Guess* guess = new Guess(game_board);
 			guess->SetNoGood(CT_UP);
@@ -166,8 +215,8 @@ void Controller::Step()
 	}
 	case CSTATE_SOLVED:
 	{
-		Logger::Instance().BreakLine();
-		Logger::Instance() << "Board has been solved!" << NEWLINE << NEWLINE;
+		std::cout << std::endl;
+		std::cout << "Board has been solved!" << std::endl << std::endl;
 
 		std::stack<char> char_stack;
 
@@ -192,10 +241,10 @@ void Controller::Step()
 		}
 
 		BoardPosition pos = game_board->GetBoardPosition();
-		Logger::Instance() << "Start Position: " << pos.x << "x " << pos.y << "y" << NEWLINE;
-		Logger::Instance() << "Solution: " << str << NEWLINE << NEWLINE;
+		std::cout << "Start Position: " << pos.x << "x " << pos.y << "y" << std::endl;
+		std::cout << "Solution: " << str << std::endl << std::endl;
 
-		Logger::Instance() << "Output String: " << pos.x << "_" << pos.y << "_" << str << NEWLINE;
+		std::cout << "Output String: " << pos.x << "_" << pos.y << "_" << str << std::endl;
 
 		http->PostPuzzleSolution(pos.x, pos.y, str);
 
@@ -204,16 +253,16 @@ void Controller::Step()
 	}
 	case CSTATE_CLEAR:
 	{
-		Logger::Instance().BreakLine();
-		Logger::Instance() << "The board will now be cleared!" << NEWLINE;
-		Logger::Instance() << "Current stack size: " << guess_stack.size() << NEWLINE;
+		std::cout << std::endl;
+		std::cout << "The board will now be cleared!" << std::endl;
+		std::cout << "Current stack size: " << guess_stack.size() << std::endl;
 
 		game_board->Clear();
 
         state = CSTATE_DONE;
 
-        Logger::Instance().BreakLine();
-        Logger::Instance() << "Solver program will now terminate!" << NEWLINE << NEWLINE;
+        std::cout << std::endl;
+        std::cout << "Solver program will now terminate!" << std::endl << std::endl;
 
 		break;
 	}
