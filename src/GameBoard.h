@@ -4,7 +4,6 @@
 #include <string>
 #include "Exceptions.h"
 #include "Switches.h"
-#include "Logger.h"
 
 enum TILE_TYPES {UP, DOWN, BLOCK};
 

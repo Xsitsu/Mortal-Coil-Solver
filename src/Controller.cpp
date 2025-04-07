@@ -49,9 +49,6 @@ std::string DecodeBoardData(std::string puzzle_data)
 
 Controller::Controller(HttpHandler *handler, int start_level, int start_x, int start_y)
 {
-#ifdef DEBUG_OUTPUT_CONSTRUCTORS
-	Logger::Instance() << "Controller constructed: " << int(this) << NEWLINE;
-#endif
 	state = CSTATE_INIT;
 	game_board = new GameBoard();
 	http = handler;
@@ -63,10 +60,6 @@ Controller::Controller(HttpHandler *handler, int start_level, int start_x, int s
 
 Controller::~Controller()
 {
-#ifdef DEBUG_OUTPUT_CONSTRUCTORS
-	Logger::Instance() << "Controller destroyed: " << int(this) << NEWLINE;
-#endif
-
 	delete game_board;
 	// Don't delete HttpHandler.
 	// We create it on the stack and just pass the pointer in.
@@ -81,8 +74,7 @@ void Controller::Step()
 	{
 	case CSTATE_INIT:
 	{
-		Logger::Instance().BreakLine();
-		Logger::Instance() << "Mortal Coil Solver Starting!" << NEWLINE;
+		std::cout << "Mortal Coil Solver Starting!" << std::endl;
 
 		state = CSTATE_LOAD;
 		break;

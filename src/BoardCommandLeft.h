@@ -9,11 +9,11 @@ private:
 
 public:
 	BoardCommandLeft(GameBoard* board);
-	~BoardCommandLeft();
+	virtual ~BoardCommandLeft();
 
-	void Do();
-	void Undo();
-	char GetCommandID() { return 'L'; }
+	virtual void Do();
+	virtual void Undo();
+	virtual char GetCommandID() { return 'L'; }
 };
 
 #endif

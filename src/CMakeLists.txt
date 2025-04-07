@@ -24,9 +24,6 @@ add_executable(${target}
     Guess.h
     Guess.cpp
 
-    Logger.h
-    Logger.cpp
-
     Switches.h
 
     http/http_handler.hpp

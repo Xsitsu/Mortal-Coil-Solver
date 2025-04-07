@@ -4,10 +4,6 @@
 
 Guess::Guess(GameBoard* board)
 {
-#ifdef DEBUG_OUTPUT_CONSTRUCTORS
-	Logger::Instance() << "Guess Constructed: " << int(this) << NEWLINE;
-#endif
-
 	this->board = board;
 
 	for (int i = 0; i < CT_EOF; i++)
@@ -18,10 +14,6 @@ Guess::Guess(GameBoard* board)
 
 Guess::~Guess()
 {
-#ifdef DEBUG_OUTPUT_CONSTRUCTORS
-	Logger::Instance() << "Guess destroyed: " << int(this) << NEWLINE << NEWLINE;
-#endif
-
 	if (command != nullptr)
 	{
 		delete command;

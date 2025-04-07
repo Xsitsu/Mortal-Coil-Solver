@@ -4,10 +4,6 @@
 
 GameBoard::GameBoard()
 {
-#ifdef DEBUG_OUTPUT_CONSTRUCTORS
-	Logger::Instance() << "Gameboard constructed: " << int(this) << NEWLINE;
-#endif
-
 	board = nullptr;
 	board_width = 0;
 	board_height = 0;
@@ -20,9 +16,7 @@ GameBoard::GameBoard()
 
 GameBoard::~GameBoard()
 {
-#ifdef DEBUG_OUTPUT_CONSTRUCTORS
-	Logger::Instance() << "Gameboard destroyed: " << int(this) << NEWLINE;
-#endif
+	
 }
 
 bool GameBoard::IsSolved()

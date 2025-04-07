@@ -4,10 +4,10 @@
 #include <string>
 #include <fstream>
 #include <stack>
+
 #include "GameBoard.h"
 #include "Switches.h"
 #include "Guess.h"
-#include "Logger.h"
 
 #include "http/http_handler.hpp"
 
