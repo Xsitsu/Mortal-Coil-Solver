@@ -1,17 +1,17 @@
 set(target "solver")
 
 add_executable(${target}
-    BoardCommand.h
-    BoardCommandDown.h
-    BoardCommandDown.cpp
-    BoardCommandLeft.h
-    BoardCommandLeft.cpp
-    BoardCommandRight.h
-    BoardCommandRight.cpp
-    BoardCommandSet.h
-    BoardCommandSet.cpp
-    BoardCommandUp.h
-    BoardCommandUp.cpp
+    board_command/BoardCommand.h
+    board_command/BoardCommandDown.h
+    board_command/BoardCommandDown.cpp
+    board_command/BoardCommandLeft.h
+    board_command/BoardCommandLeft.cpp
+    board_command/BoardCommandRight.h
+    board_command/BoardCommandRight.cpp
+    board_command/BoardCommandSet.h
+    board_command/BoardCommandSet.cpp
+    board_command/BoardCommandUp.h
+    board_command/BoardCommandUp.cpp
     
     Controller.h
     Controller.cpp

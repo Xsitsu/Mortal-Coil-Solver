@@ -1,12 +1,12 @@
 #ifndef GUESS_H
 #define GUESS_H
 
-#include "BoardCommand.h"
-#include "BoardCommandUp.h"
-#include "BoardCommandDown.h"
-#include "BoardCommandLeft.h"
-#include "BoardCommandRight.h"
-#include "BoardCommandSet.h"
+#include "board_command/BoardCommand.h"
+#include "board_command/BoardCommandUp.h"
+#include "board_command/BoardCommandDown.h"
+#include "board_command/BoardCommandLeft.h"
+#include "board_command/BoardCommandRight.h"
+#include "board_command/BoardCommandSet.h"
 
 enum COMMAND_TYPES { CT_UP, CT_DOWN, CT_LEFT, CT_RIGHT, CT_EOF };
 
