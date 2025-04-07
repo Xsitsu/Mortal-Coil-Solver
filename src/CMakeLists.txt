@@ -18,17 +18,11 @@ add_executable(${target}
 
     Exceptions.h
 
-    fileio.hpp
-    fileio.cpp
-
     GameBoard.h
     GameBoard.cpp
 
     Guess.h
     Guess.cpp
-
-    HttpService.h
-    HttpService.cpp
 
     Logger.h
     Logger.cpp
